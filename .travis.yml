@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+    - lts/*
+addons:
+    apt:
+        packages:
+            - libgconf-2-4
+cache:
+    npm: true
+    directories:
+        - ~/.cache
