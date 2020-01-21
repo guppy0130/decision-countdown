@@ -1,0 +1,26 @@
+{{!< default}}
+
+{{#contentFor 'pageStyles'}}
+{{/contentFor}}
+
+<div class="columns">
+    <div class="column">
+        <b-field label="Question">
+            <b-input v-model="question" disabled required ref="question" expanded></b-input>
+        </b-field>
+
+        <b-field label="Time">
+            <b-slider v-model="time" :min="0" :max="30" :custom-formatter="val => val + 's'" rounded lazy disabled>
+                <template v-for="val in [0, 10, 20, 30]">
+                    <b-slider-tick :value="val" :key="val">\{{val}}</b-slider-tick>
+                </template>
+            </b-slider>
+        </b-field>
+
+        <b-field :addons="false" label="Options">
+            <b-field v-for="(value, key, index) in options" :key="index">
+                <b-button :class="{ 'is-success': submitted, 'is-outlined': !submitted}" @click="select(key, value, index)" expanded :disabled="submitted">\{{key}}</b-button>
+            </b-field>
+        </b-field>
+    </div>
+</div>

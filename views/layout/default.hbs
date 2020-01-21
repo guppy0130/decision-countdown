@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+        <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+        <style>
+            .margin {
+                margin: 1em 32px;
+            }
+        </style>
+        {{{block "pageStyles"}}}
+    </head>
+    <body>
+        <section class="margin">
+            <div id="app">
+                <b-navbar :mobile-burger="false" spaced>
+                    <template slot="brand">
+                        <b-navbar-item>
+                            {{ title }}
+                        </b-navbar-item>
+                    </template>
+                </b-navbar>
+                <div class="container">
+                <!-- Buefy components goes here -->
+                {{{ body }}}
+                </div>
+            </div>
+        </section>
+
+        <script src="https://unpkg.com/vue"></script>
+        <!-- Full bundle -->
+        <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+        <script>
+            new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        time: {{ time }},
+                        question: {{{ question }}},
+                        options: {{{ options }}},
+                        newOption: '',
+                        submitButtonText: 'Submit',
+                        submitButtonLoading: false,
+                        submitted: false,
+                        url: '{{{ url }}}'
+                    }
+                },
+                mounted: function() {
+                    function countdown(vm) {
+                        if (vm.time < 1) {
+                            vm.submitted = true;
+                            window.clearInterval(interval);
+                        } else {
+                            if (!vm.submitted) {
+                                vm.time -= 1;
+                            }
+                        }
+                    }
+                    let interval;
+                    if (window.location.href.indexOf('respond') > -1) {
+                        interval = window.setInterval(countdown, 1000, this);
+                    }
+                },
+                methods: {
+                    arrayify: function(obj) {
+                        const arr = [];
+                        for (let [key, value] of Object.entries(obj)) {
+                            arr.push({key, value});
+                        }
+                        return arr;
+                    },
+                    addOption: function() {
+                        // ignore empty
+                        if (this.newOption === '') {
+                            return;
+                        }
+                        this.options.push(this.newOption);
+                        this.newOption = '';
+                    },
+                    select: function(key, value, index) {
+                        fetch(this.url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                vote: key
+                            })
+                        }).then(res => {
+                            return res.text().then(data => {
+                                return {
+                                    status: res.status,
+                                    text: data
+                                };
+                            });
+                        }).then(res => {
+                            if (res.status === 200) {
+                                let temp = {};
+                                temp[key] = value;
+                                this.options = temp;
+                                delete temp;
+                                this.submitted = true;
+                            } else if (res.status === 404) {
+                                throw new Error("Poll not found");
+                            } else if (res.status === 409) {
+                                throw new Error("Option not found");
+                            } else {
+                                throw new Error(res.text);
+                            }
+                        }).catch(e => {
+                            this.$buefy.snackbar.open({
+                                message: e.message,
+                                position: 'is-bottom-right',
+                                type: 'is-danger',
+                                indefinite: true
+                            });
+                        });
+                        return false;
+                    },
+                    copy: function() {
+                        function fallback(vm) {
+                            try {
+                                let textArea = document.createElement("textarea");
+                                textArea.style.position = 'fixed';
+                                textArea.style.top = 0;
+                                textArea.style.left = 0;
+                                textArea.style.width = '2em';
+                                textArea.style.height = '2em';
+                                textArea.style.padding = 0;
+                                textArea.style.border = 'none';
+                                textArea.style.outline = 'none';
+                                textArea.style.boxShadow = 'none';
+                                textArea.style.background = 'transparent';
+                                textArea.value = vm.url;
+                                document.body.appendChild(textArea);
+                                textArea.focus();
+                                textArea.select();
+                                if (document.execCommand('copy')) {
+                                    vm.$root.$buefy.snackbar.open({
+                                        message: 'Copied to clipboard',
+                                        position: 'is-bottom-right',
+                                        type: 'is-success'
+                                    });
+                                    document.body.removeChild(textArea);
+                                } else {
+                                    document.body.removeChild(textArea);
+                                    throw new Error();
+                                }
+                            } catch (e) {
+                                console.log(e);
+                                this.$buefy.snackbar.open({
+                                    message: 'Failed to copy to clipboard',
+                                    position: 'is-bottom-right',
+                                    type: 'is-danger',
+                                    indefinite: true
+                                });
+                            }
+                        }
+                        if (navigator.clipboard) {
+                            return navigator.clipboard.writeText(this.url).then(() => {
+                                this.$buefy.snackbar.open({
+                                    message: 'Copied to clipboard',
+                                    position: 'is-bottom-right',
+                                    type: 'is-success'
+                                });
+                            }).catch(err => {
+                                return fallback();
+                            });
+                        } else {
+                            fallback(this);
+                        }
+                        window.getSelection().removeAllRanges();
+                    },
+                    submitNew: function() {
+                        this.submitButtonLoading = true;
+                        let pass = true;
+                        if (!this.$refs.question.checkHtml5Validity()) {
+                            pass = false;
+                        }
+                        if (this.options.length < 2) {
+                            this.$buefy.snackbar.open({
+                                message: 'There must be at least two options',
+                                position: 'is-bottom-right',
+                                type: 'is-danger',
+                                indefinite: true
+                            });
+                            pass = false;
+                        }
+                        if (!pass) {
+                            this.submitButtonLoading = false;
+                            return false;
+                        }
+                        fetch('/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                time: this.time,
+                                question: this.question,
+                                options: this.options
+                            })
+                        }).then(res => {
+                            return res.text().then(data => {
+                                return {
+                                    status: res.status,
+                                    text: data
+                                }
+                            });
+                        }).then(res => {
+                            if (res.status === 400) {
+                                this.$buefy.snackbar.open({
+                                    message: res.text,
+                                    position: 'is-bottom-right',
+                                    type: 'is-danger',
+                                    indefinite: true
+                                });
+                            } else if (res.status === 200) {
+                                this.submitButtonText = 'Submitted';
+                                this.submitted = true;
+                                this.url = res.text;
+                            } else {
+                                this.$buefy.snackbar.open({
+                                    message: 'Something went wrong. Try again later.',
+                                    position: 'is-bottom-right',
+                                    type: 'is-danger',
+                                    indefinite: true
+                                });
+                            }
+                            this.submitButtonLoading = false;
+                        }).catch(err => {
+                            console.log(err);
+                        });
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
