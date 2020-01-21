@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "start-server-and-test start http://localhost:3000 cy:run",
+    "test": "start-server-and-test 3000 cy:run",
     "cy": "cypress open",
     "cy:run": "cypress run",
     "lint": "eslint ./",
@@ -28,6 +28,8 @@
     "start-server-and-test": "^1.10.6"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-hbs": "^2.3.0",
+    "nanoid": "^2.1.9"
   }
 }

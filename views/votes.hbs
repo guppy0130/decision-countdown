@@ -1,0 +1,14 @@
+{{!< default}}
+
+{{#contentFor 'pageStyles'}}
+{{/contentFor}}
+
+<div class="columns">
+    <div class="column">
+        <b-field label="Question">
+            <b-input v-model="question" disabled required ref="question" expanded></b-input>
+        </b-field>
+
+        <b-table :data="arrayify(options)" :columns="[{field: 'key', label:'Option', searchable: true}, {field: 'value', label: 'Count', numeric: true}]" :mobile-cards="false" hoverable></b-table>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+{{!< default}}
+
+{{#contentFor 'pageStyles'}}
+{{/contentFor}}
+
+<div class="columns">
+    <div class="column">
+        <b-field label="Question">
+            <b-input v-model="question" required ref="question" expanded></b-input>
+        </b-field>
+
+        <b-field label="Time">
+            <b-slider v-model="time" :min="0" :max="30" :custom-formatter="val => val + 's'" rounded lazy>
+                <template v-for="val in [0, 10, 20, 30]">
+                    <b-slider-tick :value="val" :key="val">\{{val}}</b-slider-tick>
+                </template>
+            </b-slider>
+        </b-field>
+
+        <b-field label="Options">
+            <b-field grouped>
+                <b-input v-model="newOption" expanded @keyup.native.enter="addOption"></b-input>
+                <b-button icon-right="plus" @click="addOption"></b-button>
+            </b-field>
+        </b-field>
+
+        <b-field :addons="false">
+            <b-field v-for="(pick, index) in options" :key="index" grouped>
+                <b-input :value="pick" disabled expanded></b-input>
+                <b-button class="is-outlined is-danger" @click="options.splice(index, 1)" icon-right="delete"></b-button>
+            </b-field>
+        </b-field>
+
+        <b-field>
+            <b-button class="is-success is-outlined" expanded @click="submitNew" ref="submitButton" :loading="submitButtonLoading" v-show="submitButtonText !== 'Submitted'">\{{submitButtonText}}</b-button>
+        </b-field>
+
+        <b-field v-if="submitButtonText === 'Submitted'" label="Share Link">
+            <b-field grouped>
+                <b-field expanded>
+                    <b-input :value="url" ref="copyTarget" expanded></b-input>
+                    <b-button class="is-outlined" icon-right="content-copy" @click="copy" ref="copyButton"></b-button>
+                </b-field>
+                <b-field expanded>
+                    <b-button class="is-info" expanded tag="a" :href="url">Vote</b-button>
+                </b-field>
+                <b-field expanded>
+                    <b-button class="is-info" expanded tag="a" :href="url.replace('respond', 'results')">Results</b-button>
+                </b-field>
+            </b-field>
+        </b-field>
+    </div>
+</div>
