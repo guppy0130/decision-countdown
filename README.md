@@ -2,6 +2,8 @@
 
 ## Making decision-making even more stressful
 
+[![Build Status](https://travis-ci.com/guppy0130/decision-countdown.svg?branch=master)](https://travis-ci.com/guppy0130/decision-countdown)
+
 Adds a timer to a poll, so that indecisive people have to make choices.
 
 ## Running
