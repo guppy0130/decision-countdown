@@ -1,5 +1,5 @@
 const express = require('express');
-const nanoid = require('nanoid/non-secure/generate');
+const { customAlphabet } = require('nanoid/non-secure');
 const hbs = require('express-hbs');
 const app = express();
 
@@ -10,6 +10,7 @@ const renderables = {
     title: 'Decision Countdown - bc you SUCK at choosing'
 };
 const colors = ['#2a2b2a','#337357','#ba7ea5','#2b4162','#235789'];
+const nanoid = customAlphabet('1234567890abcdef', 6);
 
 app.engine('hbs', hbs.express4({
     partialsDir: `${__dirname}/views/partials`,
@@ -45,7 +46,7 @@ app.post('/add', (req, res) => {
         return res.status(400).send('Number of options should be 1-20');
     }
     // add to data under nanoid()
-    const id = nanoid('1234567890abcdef', 6);
+    const id = nanoid();
     const optionContainer = {
         options: {}
     };

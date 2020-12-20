@@ -22,14 +22,14 @@
   },
   "homepage": "https://github.com/guppy0130/decision-countdown#readme",
   "devDependencies": {
-    "cypress": "^3.8.3",
-    "eslint": "^6.8.0",
-    "eslint-plugin-cypress": "^2.10.3",
-    "start-server-and-test": "^1.10.11"
+    "cypress": "^6.1.0",
+    "eslint": "^7.16.0",
+    "eslint-plugin-cypress": "^2.11.2",
+    "start-server-and-test": "^1.11.6"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "express-hbs": "^2.3.1",
-    "nanoid": "^2.1.11"
+    "express-hbs": "^2.3.4",
+    "nanoid": "^3.1.20"
   }
 }
