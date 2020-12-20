@@ -27,11 +27,12 @@ describe('Landing Page', function() {
         cy.get('input').last().type('Yes');
         cy.get('.mdi-plus').click();
         // clicking this resets the field
-        cy.get(':nth-child(3) > .field > .control > .input').should('be.empty');
+        let field = ':nth-child(2) > .field-body > .field > .control > .input';
+        cy.get(field).should('be.empty');
         // the other way to add an option is via the enter key
-        cy.get(':nth-child(3) > .field > .control > .input').type('No {enter}');
+        cy.get(field).type('No {enter}');
         // and again, the field should be empty
-        cy.get(':nth-child(3) > .field > .control > .input').should('be.empty');
+        cy.get(field).should('be.empty');
         // there should be two trash cans
         cy.get('.mdi-delete').should('have.length', 2).and('be.visible');
     });
@@ -58,7 +59,7 @@ describe('Landing Page', function() {
 });
 
 describe('Respond Page', function() {
-    it('Should have basic elements', function () {
+    it('Should have basic elements', function() {
         cy.visit(`/respond/${nanoid}`);
         // there should be a title
         cy.contains('Decision Countdown').should('have.length', 1).and('be.visible');
@@ -86,7 +87,7 @@ describe('Respond Page', function() {
 });
 
 describe('Votes Page', function() {
-    it('Should have basic elements', function () {
+    it('Should have basic elements', function() {
         cy.visit(`/results/${nanoid}`);
         // there should be a title
         cy.contains('Decision Countdown').should('have.length', 1).and('be.visible');
