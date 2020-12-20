@@ -1,6 +1,6 @@
 {
   "name": "decision-countdown",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Making decision-making even more stressful",
   "main": "index.js",
   "scripts": {
