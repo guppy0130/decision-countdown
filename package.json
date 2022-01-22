@@ -30,6 +30,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-hbs": "^2.3.4",
-    "nanoid": "^3.1.20"
+    "nanoid": "^3.1.31"
   }
 }
