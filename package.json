@@ -28,7 +28,7 @@
     "start-server-and-test": "^1.11.6"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-hbs": "^2.3.4",
     "nanoid": "^3.1.20"
   }
